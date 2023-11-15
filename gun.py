@@ -158,13 +158,13 @@ class Gun:
         self.screen.blit(self.image, self.rect)
 
     def move(self, add_x):
-        if 0 <= self.x <= WIDTH:
+        if 20 <= self.x <= WIDTH - 20:
             self.x += add_x
             self.rect.center = (self.x, self.y)
-        elif self.x <= 0 and add_x > 0:
+        elif self.x <= 20 and add_x > 0:
             self.x += add_x
             self.rect.center = (self.x, self.y)
-        elif self.x >= WIDTH and add_x < 0:
+        elif self.x >= WIDTH - 20 and add_x < 0:
             self.x += add_x
             self.rect.center = (self.x, self.y)
 
@@ -183,9 +183,10 @@ class Target:
         self.screen = screen
         self.points = 0
         self.live = 1
-        self.x = randrange(600, 780)
-        self.y = randrange(300, 550)
-        self.r = randrange(10, 50)
+        self.x = randrange(60, WIDTH - 60)
+        self.vx = randrange(1, 6)
+        self.y = randrange(60, 200)
+        self.r = randrange(20, 50)
         self.color = RED
         self.original_image = target_image
         self.image = pygame.transform.rotozoom(self.original_image, 0, self.r / 2000)
@@ -195,9 +196,10 @@ class Target:
     def new_target(self):
         """ Инициализация новой цели. """
         self.live = 1
-        self.x = randrange(600, 780)
-        self.y = randrange(300, 550)
-        self.r = randrange(10, 50)
+        self.x = randrange(60, WIDTH - 60)
+        self.vx = randrange(1, 6)
+        self.y = randrange(60, 200)
+        self.r = randrange(20, 50)
         self.color = RED
         self.original_image = target_image
         self.image = pygame.transform.rotozoom(self.original_image, 0, self.r / 2000)
@@ -207,6 +209,12 @@ class Target:
     def hit(self, add=1):
         """Попадание шарика в цель."""
         self.points += add
+
+    def move(self):
+        if self.x <= 60 or self.x >= WIDTH - 60:
+            self.vx = -self.vx
+        self.x += self.vx
+        self.rect.center = (self.x, self.y)
 
     def draw(self):
         pygame.transform.rotozoom(self.original_image, 0, self.r / 2000)
@@ -242,10 +250,11 @@ if __name__ == "__main__":
         gun.draw()
         if target.live:
             target.draw()
-        draw_text(screen, 'Your score:' + str(target.points), 18, WIDTH / 2, 10)
+        draw_text(screen, 'Your score: ' + str(target.points), 18, WIDTH / 2, 10)
         for b in balls:
             b.draw()
         pygame.display.update()
+        target.move()
 
         clock.tick(FPS)
         for event in pygame.event.get():
