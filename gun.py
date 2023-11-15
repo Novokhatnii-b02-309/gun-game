@@ -1,3 +1,5 @@
+import pygame.draw
+
 from gun_objects import *
 
 # функция для отрисовки набранных очков на экране
@@ -33,13 +35,12 @@ if __name__ == "__main__":
         draw_text(screen, 'Your score: ' + str(target.points), 18, WIDTH / 2, 10)
         for b in balls:
             b.draw()
-        pygame.display.update()
-        target.move()
-
-        power_bar = PowerBar(gun.x, gun.y, gun.f2_power)
+        power_bar = PowerBar(screen, gun.x, gun.y, gun.f2_power)
         pb_ratio = power_bar.ratio()
         pb_color = power_bar.color(pb_ratio)
-        power_bar.draw(screen, pb_color, pb_ratio)
+        power_bar.draw(pb_color, pb_ratio, gun.f2_on)
+        pygame.display.update()
+        target.move()
 
         clock.tick(FPS)
         for event in pygame.event.get():

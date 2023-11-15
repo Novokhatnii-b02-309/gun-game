@@ -87,7 +87,8 @@ class Ball:
         return False
 
 class PowerBar:
-    def __init__(self, x, y, power):
+    def __init__(self, screen, x, y, power):
+        self.screen = screen
         self.x = x
         self.y = y
         self.w = 60
@@ -106,9 +107,10 @@ class PowerBar:
         elif ratio > 2 / 3:
             return RED
 
-    def draw(self, screen, color, ratio):
-        screen.blit(screen, pygame.draw.rect(screen, color, pygame.Rect(self.x, self.y, self.w * ratio, self.h)))
-        screen.blit(screen, pygame.draw.rect(screen, WHITE, pygame.Rect(self.x, self.y, self.w, self.h)))
+    def draw(self, color, ratio, f2_on):
+        if f2_on:
+            pygame.draw.rect(self.screen, WHITE, pygame.Rect(self.x, self.y, self.w, self.h))
+            pygame.draw.rect(self.screen, color, pygame.Rect(self.x, self.y, self.w * ratio, self.h))
 
 class Gun:
     def __init__(self, screen):
