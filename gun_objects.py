@@ -63,8 +63,20 @@ class Ball:
             self.y -= self.vy
             self.vy -= g
 
+    def bomb_move(self):
+        if self.y + self.r > HEIGHT - 15:
+            self.vy = -self.vy * 0.5
+            self.y -= self.vy
+        if abs(self.y + self.r - (HEIGHT - 15)) <= 1:
+            self.vy = 0
+        self.y -= self.vy
+        self.vy -= g
+
     def get_vx(self):
         return self.vx
+
+    def get_vy(self):
+        return self.vy
 
     def draw(self):
         pygame.draw.circle(
@@ -112,11 +124,29 @@ class PowerBar:
             pygame.draw.rect(self.screen, WHITE, pygame.Rect(self.x, self.y, self.w, self.h))
             pygame.draw.rect(self.screen, color, pygame.Rect(self.x, self.y, self.w * ratio, self.h))
 
+class HealthBar:
+    def __init__(self, screen, x, y, health, w, h):
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.health = health
+        self.mhealth = 100
+
+    def ratio(self):
+        return self.health / self.mhealth
+
+    def draw(self, ratio):
+        pygame.draw.rect(self.screen, RED, pygame.Rect(self.x, self.y, self.w, self.h))
+        pygame.draw.rect(self.screen, GREEN, pygame.Rect(self.x, self.y, self.w * ratio, self.h))
+
 class Gun:
     def __init__(self, screen):
         self.screen = screen
         self.x = GUN_X + 100
         self.y = GUN_Y
+        self.r = 20
         self.f2_power = 10
         self.f2_on = 0
         self.an = 1
@@ -234,10 +264,63 @@ class Target:
         self.points += add
 
     def move(self):
-        if self.x <= 60 or self.x >= WIDTH - 60:
+        if self.x <= 10 or self.x >= WIDTH - 10:
             self.vx = -self.vx
         self.x += self.vx
         self.rect.center = (self.x, self.y)
+
+    def draw(self):
+        pygame.transform.rotozoom(self.original_image, 0, self.r / 2000)
+        self.screen.blit(self.image, self.rect)
+
+class Bomber:
+    def __init__(self, screen):
+        """ Инициализация новой цели. """
+        self.screen = screen
+        self.points = 0
+        self.live = 1
+        self.x = randrange(60, WIDTH - 60)
+        self.vx = randrange(1, 3)
+        self.y = randrange(60, 200)
+        self.r = randrange(20, 50)
+        self.color = RED
+        self.original_image = bomber_image
+        self.image = pygame.transform.rotozoom(self.original_image, 0, self.r / 1000)
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.x, self.y)
+
+    def new_bomber(self):
+        """ Инициализация новой цели. """
+        self.live = 1
+        self.x = randrange(60, WIDTH - 60)
+        self.vx = randrange(1, 3)
+        self.y = randrange(60, 200)
+        self.r = randrange(20, 50)
+        self.color = RED
+        self.original_image = bomber_image
+        self.image = pygame.transform.rotozoom(self.original_image, 0, self.r / 1000)
+        self.rect = self.image.get_rect()
+        self.rect.center = (self.x, self.y)
+
+    def hit(self, add=1):
+        """Попадание шарика в цель."""
+        self.points += add
+
+    def move(self, obj):
+        if self.x <= 10 or self.x >= WIDTH - 10:
+            self.vx = -self.vx
+        elif self.x < obj.x:
+            self.vx = abs(self.vx)
+        elif self.x > obj.x:
+            self.vx = -abs(self.vx)
+        self.x += self.vx
+        self.rect.center = (self.x, self.y)
+
+    def drop(self, bombs):
+        new_bomb = Ball(self.screen, x=self.x, y=self.y)
+        new_bomb.vx = 0
+        new_bomb.vy = 0.00005
+        bombs.append(new_bomb)
 
     def draw(self):
         pygame.transform.rotozoom(self.original_image, 0, self.r / 2000)
@@ -249,3 +332,5 @@ gun_image_flip = pygame.image.load("gun_pictures/gun-40(rot).png")
 background_image = pygame.image.load("gun_pictures/background.jpg")
 target_image = pygame.image.load("gun_pictures/target.png")
 bullet_image = pygame.image.load("gun_pictures/bullet.png")
+bomber_image = pygame.image.load("gun_pictures/bomber.png")
+health_image = pygame.image.load("gun_pictures/health.png")
