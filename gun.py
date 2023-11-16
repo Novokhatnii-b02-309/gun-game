@@ -17,6 +17,7 @@ if __name__ == "__main__":
     bullet = 0
     balls = []
     bullets_amount = 10
+    points = 0
 
     gun_image.convert_alpha()
     gun_image_flip.convert_alpha()
@@ -47,7 +48,8 @@ if __name__ == "__main__":
         screen.blit(bullet_image, bullet_image.get_rect(center=(20, 30)))
         draw_text(screen, str(bullets_amount), 25, 50, 20)
         if bullets_amount <= 0:
-            draw_text(screen, 'GAME OVER! SCORE: ' + str(target.points), 40, WIDTH / 2, HEIGHT / 2 - 110)
+            points = max(points, target.points)
+            draw_text(screen, 'GAME OVER! YOUR BEST: ' + str(points), 40, WIDTH / 2, HEIGHT / 2 - 110)
             draw_text(screen, 'PRESS R TO RESTART', 40, WIDTH / 2, HEIGHT / 2 - 60)
 
         pygame.display.update()
@@ -72,6 +74,8 @@ if __name__ == "__main__":
             gun.move(5)
         if bullets_amount <= 0 and key_pressed[pygame.K_r]:
             bullets_amount = 10
+            points = target.points
+            target.points = 0
         gun.targetting(gun.get_mouse_position())
 
         for b in balls:
