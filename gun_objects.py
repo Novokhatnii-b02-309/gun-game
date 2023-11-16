@@ -244,7 +244,7 @@ class Target:
         self.screen.blit(self.image, self.rect)
 
 # загружаем необходимые изображения
-gun_image = pygame.image.load("gun-40(2).png")
-gun_image_flip = pygame.image.load("gun-40(rot).png")
-background_image = pygame.image.load("background.jpg")
-target_image = pygame.image.load("target.png")
+gun_image = pygame.image.load("gun_pictures/gun-40(2).png")
+gun_image_flip = pygame.image.load("gun_pictures/gun-40(rot).png")
+background_image = pygame.image.load("gun_pictures/background.jpg")
+target_image = pygame.image.load("gun_pictures/target.png")
